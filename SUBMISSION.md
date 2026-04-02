@@ -8,6 +8,8 @@ https://github.com/123Sarthak-cyber/Zorvyn
 
 Use one of the following depending on what the form accepts:
 
+- GitHub Pages landing page:
+  - https://123sarthak-cyber.github.io/Zorvyn/
 - Repository README (recommended if not deployed):
   - https://github.com/123Sarthak-cyber/Zorvyn#readme
 - Local Swagger docs (only works on your machine):

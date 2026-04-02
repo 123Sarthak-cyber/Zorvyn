@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Zorvyn Finance Backend</title>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --panel: rgba(15, 23, 42, 0.72);
+      --text: #e2e8f0;
+      --muted: #94a3b8;
+      --accent: #38bdf8;
+      --accent-2: #22c55e;
+      --border: rgba(148, 163, 184, 0.2);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(56, 189, 248, 0.18), transparent 30%),
+        radial-gradient(circle at bottom right, rgba(34, 197, 94, 0.16), transparent 24%),
+        var(--bg);
+      color: var(--text);
+      display: grid;
+      place-items: center;
+      padding: 24px;
+    }
+    .card {
+      width: min(920px, 100%);
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 28px;
+      backdrop-filter: blur(16px);
+      box-shadow: 0 30px 90px rgba(15, 23, 42, 0.45);
+      padding: clamp(24px, 4vw, 48px);
+    }
+    .eyebrow {
+      color: var(--accent);
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+      font-size: 0.78rem;
+      font-weight: 700;
+      margin-bottom: 12px;
+    }
+    h1 {
+      margin: 0;
+      font-size: clamp(2.4rem, 5vw, 4.75rem);
+      line-height: 0.95;
+      max-width: 12ch;
+    }
+    p {
+      margin: 18px 0 0;
+      max-width: 68ch;
+      color: var(--muted);
+      font-size: 1.05rem;
+      line-height: 1.7;
+    }
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+      margin-top: 28px;
+    }
+    a.button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 180px;
+      padding: 14px 20px;
+      border-radius: 999px;
+      text-decoration: none;
+      font-weight: 700;
+      border: 1px solid var(--border);
+      transition: transform 0.18s ease, background 0.18s ease, border-color 0.18s ease;
+    }
+    a.button:hover { transform: translateY(-1px); }
+    .primary {
+      background: linear-gradient(135deg, var(--accent), #0ea5e9);
+      color: #08111f;
+      border-color: transparent;
+    }
+    .secondary {
+      color: var(--text);
+      background: rgba(255, 255, 255, 0.03);
+    }
+    .meta {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 16px;
+      margin-top: 36px;
+    }
+    .meta div {
+      padding: 16px;
+      border-radius: 18px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--border);
+    }
+    .meta strong {
+      display: block;
+      font-size: 0.9rem;
+      color: var(--accent-2);
+      margin-bottom: 8px;
+    }
+    .meta span {
+      color: var(--muted);
+      font-size: 0.95rem;
+      line-height: 1.5;
+    }
+    code {
+      background: rgba(148, 163, 184, 0.12);
+      border: 1px solid var(--border);
+      padding: 2px 8px;
+      border-radius: 999px;
+      color: #cbd5e1;
+      font-size: 0.92em;
+    }
+    @media (max-width: 640px) {
+      .actions { flex-direction: column; }
+      a.button { width: 100%; }
+      h1 { max-width: none; }
+    }
+  </style>
+</head>
+<body>
+  <main class="card">
+    <div class="eyebrow">Finance Dashboard Backend</div>
+    <h1>Zorvyn API landing page</h1>
+    <p>
+      This repository contains the finance data processing and access control backend for the assignment.
+      It provides role-based user access, financial record CRUD, dashboard summaries, validation, and a
+      lightweight mock auth model for local and hosted demos.
+    </p>
+    <div class="actions">
+      <a class="button primary" href="https://github.com/123Sarthak-cyber/Zorvyn#readme" target="_blank" rel="noreferrer">Open README</a>
+      <a class="button secondary" href="/openapi.json" target="_blank" rel="noreferrer">View OpenAPI</a>
+      <a class="button secondary" href="/docs" target="_blank" rel="noreferrer">Open API Docs</a>
+    </div>
+    <section class="meta">
+      <div>
+        <strong>Framework</strong>
+        <span>Node.js with Express and SQLite.</span>
+      </div>
+      <div>
+        <strong>Auth</strong>
+        <span>Mock header-based auth via <code>x-user-id</code>.</span>
+      </div>
+      <div>
+        <strong>Roles</strong>
+        <span>viewer, analyst, and admin permissions enforced in middleware.</span>
+      </div>
+      <div>
+        <strong>Docs</strong>
+        <span>OpenAPI and Swagger UI are included in the backend.</span>
+      </div>
+    </section>
+  </main>
+</body>
+</html>
