@@ -11,11 +11,16 @@ Backend assignment submission for a finance dashboard system with role-based acc
 
 ## Features Implemented
 
+- Local web app dashboard served from the same Express server
+- Token-based authentication with JWT login
 - User and role management (admin-only)
 - User status support (active/inactive)
 - Role-based access control at middleware layer
 - Financial record CRUD (admin create/update/delete, all roles read)
+- Record search support
 - Filtering and pagination for records
+- Soft delete for records
+- Rate limiting on auth and API routes
 - Dashboard summary endpoint with:
   - Total income
   - Total expense
@@ -34,8 +39,10 @@ Backend assignment submission for a finance dashboard system with role-based acc
 
 ## Mock Authentication
 
-This project uses a mock auth model through request header:
+This project supports token auth and a fallback mock header auth model for local development:
 
+- Login endpoint: `POST /api/auth/login`
+- Header: `Authorization: Bearer <token>`
 - Header: `x-user-id`
 - The user is loaded from the database and must be active
 
@@ -53,6 +60,8 @@ Base URL: `http://localhost:4000`
 
 - `GET /docs`
 - `GET /openapi.json`
+- `POST /api/auth/login`
+- `GET /api/auth/me`
 
 ### Health
 
@@ -75,6 +84,7 @@ Base URL: `http://localhost:4000`
 
 - `type`: income | expense
 - `category`: string
+- `search`: string matched against category and notes
 - `startDate`: YYYY-MM-DD
 - `endDate`: YYYY-MM-DD
 - `page`: positive integer (default 1)
@@ -99,7 +109,37 @@ Base URL: `http://localhost:4000`
    npm run start
    ```
 
-3. Use `x-user-id` in every `/api/*` request.
+3. Open `http://localhost:4000` in your browser for the local web app.
+4. Use `POST /api/auth/login` to obtain a JWT token, or `x-user-id` for quick local testing.
+5. Protected API requests accept either `Authorization: Bearer <token>` or `x-user-id`.
+
+## Local Web App
+
+The root page is a browser-based dashboard that talks to the API on the same origin.
+
+- Switch between seeded users to simulate viewer, analyst, and admin access.
+- View dashboard totals, category totals, recent records, and users.
+- Create new financial records when signed in as the admin user.
+
+## Optional Enhancements Included
+
+- Authentication using tokens
+- Pagination for record listing
+- Search support
+- Soft delete functionality
+- Rate limiting
+- Unit/integration tests
+- API documentation
+
+## Access Tokens
+
+Use `POST /api/auth/login` with one of the seeded emails to receive a JWT token:
+
+- `admin@finance.local`
+- `analyst@finance.local`
+- `viewer@finance.local`
+
+Then send requests with `Authorization: Bearer <token>`.
 
 ## Example Requests
 

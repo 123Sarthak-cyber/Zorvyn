@@ -3,159 +3,785 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Zorvyn Finance Backend</title>
+  <title>Zorvyn Finance Dashboard</title>
   <style>
     :root {
-      --bg: #0f172a;
-      --panel: rgba(15, 23, 42, 0.72);
-      --text: #e2e8f0;
-      --muted: #94a3b8;
-      --accent: #38bdf8;
-      --accent-2: #22c55e;
-      --border: rgba(148, 163, 184, 0.2);
+      --bg: #07111f;
+      --panel: rgba(8, 15, 28, 0.84);
+      --panel-2: rgba(11, 19, 35, 0.92);
+      --line: rgba(148, 163, 184, 0.16);
+      --text: #e5eefb;
+      --muted: #96a9c4;
+      --good: #38d996;
+      --warn: #f7b955;
+      --bad: #fb7185;
+      --blue: #49b7ff;
+      --shadow: 0 24px 90px rgba(0, 0, 0, 0.4);
     }
     * { box-sizing: border-box; }
+    html, body { height: 100%; }
     body {
       margin: 0;
-      min-height: 100vh;
-      font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       background:
-        radial-gradient(circle at top left, rgba(56, 189, 248, 0.18), transparent 30%),
-        radial-gradient(circle at bottom right, rgba(34, 197, 94, 0.16), transparent 24%),
-        var(--bg);
+        radial-gradient(circle at 15% 20%, rgba(73, 183, 255, 0.16), transparent 28%),
+        radial-gradient(circle at 85% 10%, rgba(56, 217, 150, 0.14), transparent 24%),
+        radial-gradient(circle at 50% 90%, rgba(251, 113, 133, 0.10), transparent 22%),
+        linear-gradient(180deg, #050b16 0%, #07111f 100%);
       color: var(--text);
+    }
+    .shell {
+      min-height: 100%;
       display: grid;
-      place-items: center;
+      grid-template-columns: 300px minmax(0, 1fr);
+    }
+    aside {
       padding: 24px;
+      border-right: 1px solid var(--line);
+      background: rgba(3, 8, 16, 0.56);
+      backdrop-filter: blur(18px);
     }
-    .card {
-      width: min(920px, 100%);
-      background: var(--panel);
-      border: 1px solid var(--border);
-      border-radius: 28px;
-      backdrop-filter: blur(16px);
-      box-shadow: 0 30px 90px rgba(15, 23, 42, 0.45);
-      padding: clamp(24px, 4vw, 48px);
+    main {
+      padding: 24px;
+      overflow: auto;
     }
-    .eyebrow {
-      color: var(--accent);
-      text-transform: uppercase;
-      letter-spacing: 0.18em;
-      font-size: 0.78rem;
-      font-weight: 700;
-      margin-bottom: 12px;
-    }
-    h1 {
-      margin: 0;
-      font-size: clamp(2.4rem, 5vw, 4.75rem);
-      line-height: 0.95;
-      max-width: 12ch;
-    }
-    p {
-      margin: 18px 0 0;
-      max-width: 68ch;
-      color: var(--muted);
-      font-size: 1.05rem;
-      line-height: 1.7;
-    }
-    .actions {
+    .brand {
       display: flex;
-      flex-wrap: wrap;
-      gap: 14px;
-      margin-top: 28px;
+      flex-direction: column;
+      gap: 8px;
+      margin-bottom: 24px;
     }
-    a.button {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      min-width: 180px;
-      padding: 14px 20px;
-      border-radius: 999px;
-      text-decoration: none;
-      font-weight: 700;
-      border: 1px solid var(--border);
-      transition: transform 0.18s ease, background 0.18s ease, border-color 0.18s ease;
+    .brand h1 {
+      margin: 0;
+      font-size: 1.4rem;
+      letter-spacing: 0.02em;
     }
-    a.button:hover { transform: translateY(-1px); }
-    .primary {
-      background: linear-gradient(135deg, var(--accent), #0ea5e9);
-      color: #08111f;
-      border-color: transparent;
+    .brand p, .subtle { color: var(--muted); margin: 0; line-height: 1.5; }
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      box-shadow: var(--shadow);
     }
-    .secondary {
-      color: var(--text);
-      background: rgba(255, 255, 255, 0.03);
-    }
-    .meta {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-      gap: 16px;
-      margin-top: 36px;
-    }
-    .meta div {
-      padding: 16px;
-      border-radius: 18px;
-      background: rgba(255, 255, 255, 0.03);
-      border: 1px solid var(--border);
-    }
-    .meta strong {
+    .side-card, .section-card { padding: 18px; }
+    .side-card + .side-card { margin-top: 16px; }
+    label {
       display: block;
-      font-size: 0.9rem;
-      color: var(--accent-2);
+      font-size: 0.84rem;
+      color: var(--muted);
       margin-bottom: 8px;
     }
-    .meta span {
+    select, input, textarea, button {
+      width: 100%;
+      border-radius: 14px;
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.04);
+      color: var(--text);
+      padding: 12px 14px;
+      font: inherit;
+      outline: none;
+    }
+    textarea { min-height: 102px; resize: vertical; }
+    button {
+      cursor: pointer;
+      font-weight: 700;
+      background: linear-gradient(135deg, #49b7ff, #2dd4bf);
+      color: #04101c;
+      border: none;
+      transition: transform 0.16s ease, filter 0.16s ease;
+    }
+    button:hover { transform: translateY(-1px); filter: brightness(1.04); }
+    button.secondary {
+      background: rgba(255, 255, 255, 0.05);
+      color: var(--text);
+      border: 1px solid var(--line);
+    }
+    .stack { display: grid; gap: 12px; }
+    .button-row { display: grid; gap: 10px; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .tags { display: flex; flex-wrap: wrap; gap: 8px; }
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 11px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--line);
       color: var(--muted);
-      font-size: 0.95rem;
+      font-size: 0.88rem;
+    }
+    .content {
+      display: grid;
+      gap: 18px;
+    }
+    .hero {
+      padding: 24px;
+      background: linear-gradient(135deg, rgba(73, 183, 255, 0.14), rgba(45, 212, 191, 0.10));
+      border: 1px solid var(--line);
+      border-radius: 26px;
+      box-shadow: var(--shadow);
+    }
+    .hero h2 { margin: 0; font-size: clamp(2rem, 3vw, 3.4rem); line-height: 1; }
+    .hero p { margin: 14px 0 0; max-width: 75ch; color: var(--muted); line-height: 1.7; }
+    .grid-kpis {
+      display: grid;
+      gap: 16px;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+    .kpi {
+      padding: 18px;
+      border-radius: 22px;
+      background: var(--panel-2);
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow);
+    }
+    .kpi span { display: block; color: var(--muted); font-size: 0.88rem; margin-bottom: 10px; }
+    .kpi strong { font-size: clamp(1.4rem, 2vw, 2rem); }
+    .kpi em { display: block; margin-top: 8px; font-style: normal; color: var(--muted); font-size: 0.82rem; }
+    .two-col {
+      display: grid;
+      gap: 18px;
+      grid-template-columns: 1.1fr 0.9fr;
+    }
+    .section-card {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      box-shadow: var(--shadow);
+    }
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+    .section-header h3 { margin: 0; font-size: 1.1rem; }
+    .filters {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+    .list, .table-wrap {
+      overflow: auto;
+      border-radius: 18px;
+      border: 1px solid var(--line);
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 760px;
+      background: rgba(255, 255, 255, 0.02);
+    }
+    th, td {
+      text-align: left;
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--line);
+      vertical-align: top;
+    }
+    th { color: var(--muted); font-size: 0.86rem; font-weight: 600; background: rgba(255, 255, 255, 0.02); }
+    td { font-size: 0.95rem; }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      font-size: 0.8rem;
+      font-weight: 700;
+    }
+    .income { color: #06130f; background: rgba(56, 217, 150, 0.95); }
+    .expense { color: #13090d; background: rgba(251, 113, 133, 0.94); }
+    .role-chip {
+      display: inline-flex;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: rgba(73, 183, 255, 0.12);
+      border: 1px solid var(--line);
+      color: #b7e7ff;
+      font-size: 0.82rem;
+      font-weight: 700;
+    }
+    .status {
+      display: inline-flex;
+      padding: 6px 10px;
+      border-radius: 999px;
+      font-size: 0.8rem;
+      font-weight: 700;
+    }
+    .active { background: rgba(56, 217, 150, 0.14); color: #5ff0af; }
+    .inactive { background: rgba(251, 113, 133, 0.12); color: #ff9db0; }
+    .notice {
+      margin-top: 14px;
+      padding: 12px 14px;
+      border-radius: 16px;
+      background: rgba(73, 183, 255, 0.09);
+      border: 1px solid rgba(73, 183, 255, 0.2);
+      color: #cbefff;
+      font-size: 0.92rem;
       line-height: 1.5;
     }
-    code {
-      background: rgba(148, 163, 184, 0.12);
-      border: 1px solid var(--border);
-      padding: 2px 8px;
-      border-radius: 999px;
-      color: #cbd5e1;
-      font-size: 0.92em;
+    .muted { color: var(--muted); }
+    .footer-note { margin-top: 10px; font-size: 0.84rem; color: var(--muted); }
+    .hidden { display: none !important; }
+    .error { color: #fecdd3; }
+    .success { color: #c7f9e4; }
+    .loading { opacity: 0.68; }
+    .chart-list {
+      display: grid;
+      gap: 10px;
     }
-    @media (max-width: 640px) {
-      .actions { flex-direction: column; }
-      a.button { width: 100%; }
-      h1 { max-width: none; }
+    .chart-row {
+      display: grid;
+      grid-template-columns: 110px 1fr 90px;
+      gap: 12px;
+      align-items: center;
+    }
+    .bar-track {
+      height: 12px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.06);
+      overflow: hidden;
+      border: 1px solid var(--line);
+    }
+    .bar-fill {
+      height: 100%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, #49b7ff, #2dd4bf);
+    }
+    @media (max-width: 1200px) {
+      .shell { grid-template-columns: 1fr; }
+      aside { border-right: none; border-bottom: 1px solid var(--line); }
+      .grid-kpis, .two-col, .filters { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+    @media (max-width: 720px) {
+      main, aside { padding: 16px; }
+      .grid-kpis, .two-col, .filters, .button-row { grid-template-columns: 1fr; }
+      .chart-row { grid-template-columns: 90px 1fr; }
+      .chart-row .value { grid-column: 2; }
     }
   </style>
 </head>
 <body>
-  <main class="card">
-    <div class="eyebrow">Finance Dashboard Backend</div>
-    <h1>Zorvyn API landing page</h1>
-    <p>
-      This repository contains the finance data processing and access control backend for the assignment.
-      It provides role-based user access, financial record CRUD, dashboard summaries, validation, and a
-      lightweight mock auth model for local and hosted demos.
-    </p>
-    <div class="actions">
-      <a class="button primary" href="https://github.com/123Sarthak-cyber/Zorvyn#readme" target="_blank" rel="noreferrer">Open README</a>
-      <a class="button secondary" href="/openapi.json" target="_blank" rel="noreferrer">View OpenAPI</a>
-      <a class="button secondary" href="/docs" target="_blank" rel="noreferrer">Open API Docs</a>
-    </div>
-    <section class="meta">
-      <div>
-        <strong>Framework</strong>
-        <span>Node.js with Express and SQLite.</span>
+  <div class="shell">
+    <aside>
+      <div class="brand">
+        <h1>Zorvyn</h1>
+        <p>Local finance dashboard for the assignment backend.</p>
       </div>
-      <div>
-        <strong>Auth</strong>
-        <span>Mock header-based auth via <code>x-user-id</code>.</span>
+
+      <div class="panel side-card stack">
+        <div>
+          <label for="userSelect">Session user</label>
+          <select id="userSelect"></select>
+        </div>
+        <div class="button-row">
+          <button id="refreshBtn">Refresh</button>
+          <button id="seedBtn" class="secondary">Load Demo Data</button>
+        </div>
+        <div class="tags">
+          <span class="tag">API: <span id="apiState">localhost:4000</span></span>
+          <span class="tag">Role: <span id="roleState">viewer</span></span>
+        </div>
+        <div class="notice" id="authNotice">
+          Switch the selected user to simulate viewer, analyst, or admin access.
+        </div>
       </div>
-      <div>
-        <strong>Roles</strong>
-        <span>viewer, analyst, and admin permissions enforced in middleware.</span>
+
+      <div class="panel side-card stack">
+        <div>
+          <label>Quick actions</label>
+          <div class="button-row">
+            <button id="loadRecordsBtn" class="secondary">Records</button>
+            <button id="loadSummaryBtn" class="secondary">Summary</button>
+          </div>
+        </div>
+        <div>
+          <label>API docs</label>
+          <div class="button-row">
+            <a class="linkButton" href="/docs" target="_blank" rel="noreferrer">Swagger UI</a>
+            <a class="linkButton" href="/openapi.json" target="_blank" rel="noreferrer">OpenAPI</a>
+          </div>
+        </div>
       </div>
-      <div>
-        <strong>Docs</strong>
-        <span>OpenAPI and Swagger UI are included in the backend.</span>
-      </div>
-    </section>
-  </main>
+
+      <style>
+        .linkButton {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          padding: 12px 14px;
+          border-radius: 14px;
+          border: 1px solid var(--line);
+          text-decoration: none;
+          color: var(--text);
+          background: rgba(255,255,255,0.04);
+          font-weight: 700;
+        }
+      </style>
+    </aside>
+
+    <main>
+      <section class="hero">
+        <h2>Finance dashboard you can host locally</h2>
+        <p>
+          This single-page app runs from the same Express server as the API. It reads records, summaries,
+          and users based on the selected session user, so you can open it on any machine with the local server running.
+        </p>
+      </section>
+
+      <section class="grid-kpis" id="kpis">
+        <div class="kpi"><span>Total income</span><strong id="totalIncome">0</strong><em id="incomeDelta">No data yet</em></div>
+        <div class="kpi"><span>Total expense</span><strong id="totalExpense">0</strong><em id="expenseDelta">No data yet</em></div>
+        <div class="kpi"><span>Net balance</span><strong id="netBalance">0</strong><em id="netDelta">No data yet</em></div>
+        <div class="kpi"><span>Recent records</span><strong id="recordCount">0</strong><em id="recordMeta">Loaded from API</em></div>
+      </section>
+
+      <section class="two-col">
+        <div class="section-card">
+          <div class="section-header">
+            <h3>Financial records</h3>
+            <span class="subtle" id="recordsMeta">Ready</span>
+          </div>
+          <div class="filters">
+            <div>
+              <label for="filterType">Type</label>
+              <select id="filterType">
+                <option value="">All</option>
+                <option value="income">Income</option>
+                <option value="expense">Expense</option>
+              </select>
+            </div>
+            <div>
+              <label for="filterCategory">Category</label>
+              <input id="filterCategory" placeholder="salary, rent, travel" />
+            </div>
+            <div>
+              <label for="filterStart">Start date</label>
+              <input id="filterStart" type="date" />
+            </div>
+            <div>
+              <label for="filterEnd">End date</label>
+              <input id="filterEnd" type="date" />
+            </div>
+          </div>
+          <div class="button-row" style="margin-bottom:14px">
+            <button id="applyFiltersBtn">Apply Filters</button>
+            <button id="clearFiltersBtn" class="secondary">Clear Filters</button>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Date</th>
+                  <th>Type</th>
+                  <th>Category</th>
+                  <th>Amount</th>
+                  <th>Notes</th>
+                  <th>By</th>
+                </tr>
+              </thead>
+              <tbody id="recordsTable"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="stack">
+          <div class="section-card">
+            <div class="section-header">
+              <h3>Dashboard summary</h3>
+              <span class="subtle" id="summaryMeta">Auto-updates</span>
+            </div>
+            <div class="chart-list" id="categoryTotals"></div>
+            <div class="notice" id="summaryStatus">Summary values come from the API and respect the selected filters.</div>
+          </div>
+
+          <div class="section-card stack" id="adminCard">
+            <div class="section-header">
+              <h3>Admin record editor</h3>
+              <span class="role-chip" id="adminChip">admin only</span>
+            </div>
+            <div>
+              <label for="amount">Amount</label>
+              <input id="amount" type="number" step="0.01" placeholder="1250.50" />
+            </div>
+            <div class="filters">
+              <div>
+                <label for="type">Type</label>
+                <select id="type">
+                  <option value="income">Income</option>
+                  <option value="expense">Expense</option>
+                </select>
+              </div>
+              <div>
+                <label for="category">Category</label>
+                <input id="category" placeholder="salary" />
+              </div>
+              <div>
+                <label for="date">Date</label>
+                <input id="date" type="date" />
+              </div>
+              <div>
+                <label for="notes">Notes</label>
+                <input id="notes" placeholder="March payroll" />
+              </div>
+            </div>
+            <div class="button-row">
+              <button id="createRecordBtn">Create Record</button>
+              <button id="resetFormBtn" class="secondary">Reset</button>
+            </div>
+            <div class="footer-note" id="adminNote">Admin users can create and manage records. Other roles can only view data.</div>
+          </div>
+
+          <div class="section-card stack">
+            <div class="section-header">
+              <h3>Users</h3>
+              <span class="subtle">Admin view</span>
+            </div>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Role</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody id="usersTable"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <div class="notice" id="statusBar">Ready.</div>
+    </main>
+  </div>
+
+  <script>
+    const users = [
+      { id: 1, label: 'Admin User', role: 'admin' },
+      { id: 2, label: 'Analyst User', role: 'analyst' },
+      { id: 3, label: 'Viewer User', role: 'viewer' }
+    ];
+
+    const state = {
+      userId: 1,
+      filters: {
+        type: '',
+        category: '',
+        startDate: '',
+        endDate: ''
+      },
+      lastSummary: null,
+      lastRecords: []
+    };
+
+    const money = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' });
+
+    const els = {
+      userSelect: document.getElementById('userSelect'),
+      roleState: document.getElementById('roleState'),
+      authNotice: document.getElementById('authNotice'),
+      apiState: document.getElementById('apiState'),
+      refreshBtn: document.getElementById('refreshBtn'),
+      seedBtn: document.getElementById('seedBtn'),
+      loadRecordsBtn: document.getElementById('loadRecordsBtn'),
+      loadSummaryBtn: document.getElementById('loadSummaryBtn'),
+      filterType: document.getElementById('filterType'),
+      filterCategory: document.getElementById('filterCategory'),
+      filterStart: document.getElementById('filterStart'),
+      filterEnd: document.getElementById('filterEnd'),
+      applyFiltersBtn: document.getElementById('applyFiltersBtn'),
+      clearFiltersBtn: document.getElementById('clearFiltersBtn'),
+      recordsTable: document.getElementById('recordsTable'),
+      recordsMeta: document.getElementById('recordsMeta'),
+      summaryMeta: document.getElementById('summaryMeta'),
+      summaryStatus: document.getElementById('summaryStatus'),
+      totalIncome: document.getElementById('totalIncome'),
+      totalExpense: document.getElementById('totalExpense'),
+      netBalance: document.getElementById('netBalance'),
+      recordCount: document.getElementById('recordCount'),
+      incomeDelta: document.getElementById('incomeDelta'),
+      expenseDelta: document.getElementById('expenseDelta'),
+      netDelta: document.getElementById('netDelta'),
+      recordMeta: document.getElementById('recordMeta'),
+      categoryTotals: document.getElementById('categoryTotals'),
+      usersTable: document.getElementById('usersTable'),
+      statusBar: document.getElementById('statusBar'),
+      adminCard: document.getElementById('adminCard'),
+      adminNote: document.getElementById('adminNote'),
+      adminChip: document.getElementById('adminChip'),
+      amount: document.getElementById('amount'),
+      type: document.getElementById('type'),
+      category: document.getElementById('category'),
+      date: document.getElementById('date'),
+      notes: document.getElementById('notes'),
+      createRecordBtn: document.getElementById('createRecordBtn'),
+      resetFormBtn: document.getElementById('resetFormBtn')
+    };
+
+    function apiHeaders() {
+      return {
+        'Content-Type': 'application/json',
+        'x-user-id': String(state.userId)
+      };
+    }
+
+    function setStatus(message, kind = 'info') {
+      els.statusBar.className = `notice ${kind === 'error' ? 'error' : kind === 'success' ? 'success' : ''}`;
+      els.statusBar.textContent = message;
+    }
+
+    function currentUser() {
+      return users.find((user) => user.id === state.userId);
+    }
+
+    function updateRoleUi() {
+      const user = currentUser();
+      els.roleState.textContent = user.role;
+      els.apiState.textContent = 'localhost:4000';
+      const isAdmin = user.role === 'admin';
+      els.adminCard.classList.toggle('hidden', !isAdmin);
+      els.adminNote.textContent = isAdmin ? 'Admin users can create and manage records. Other roles can only view data.' : 'Only admin users can see the create form.';
+      els.adminChip.textContent = isAdmin ? 'admin enabled' : 'hidden';
+      els.authNotice.textContent = `Selected session: ${user.label}. Requests are sent with x-user-id=${user.id}.`;
+      els.createRecordBtn.disabled = !isAdmin;
+      els.createRecordBtn.style.opacity = isAdmin ? '1' : '0.5';
+      els.createRecordBtn.style.cursor = isAdmin ? 'pointer' : 'not-allowed';
+    }
+
+    function buildQuery() {
+      const params = new URLSearchParams();
+      for (const [key, value] of Object.entries(state.filters)) {
+        if (value) params.set(key, value);
+      }
+      params.set('page', '1');
+      params.set('pageSize', '20');
+      return params.toString();
+    }
+
+    function renderRecords(records) {
+      els.recordsTable.innerHTML = records.length
+        ? records.map((record) => {
+            const badgeClass = record.type === 'income' ? 'income' : 'expense';
+            const amount = Number(record.amount || 0);
+            return `
+              <tr>
+                <td>${record.date}</td>
+                <td><span class="badge ${badgeClass}">${record.type}</span></td>
+                <td>${record.category}</td>
+                <td>${money.format(amount)}</td>
+                <td>${record.notes ?? ''}</td>
+                <td>${record.createdByName ?? 'system'}</td>
+              </tr>
+            `;
+          }).join('')
+        : '<tr><td colspan="6" class="muted">No records returned for the selected filters.</td></tr>';
+      els.recordCount.textContent = String(records.length);
+      els.recordsMeta.textContent = `${records.length} records loaded`;
+      els.recordMeta.textContent = records.length ? `Latest date: ${records[0].date}` : 'No rows';
+    }
+
+    function renderSummary(summary) {
+      const totals = summary.totals;
+      els.totalIncome.textContent = money.format(Number(totals.totalIncome));
+      els.totalExpense.textContent = money.format(Number(totals.totalExpense));
+      els.netBalance.textContent = money.format(Number(totals.netBalance));
+      els.incomeDelta.textContent = 'Income across current filter';
+      els.expenseDelta.textContent = 'Expense across current filter';
+      els.netDelta.textContent = 'Net balance across current filter';
+      els.summaryStatus.textContent = `Summary loaded with ${summary.categoryTotals.length} category buckets and ${summary.recentActivity.length} recent items.`;
+      els.categoryTotals.innerHTML = summary.categoryTotals.length
+        ? summary.categoryTotals.map((item) => {
+            const width = Math.max(6, Math.min(100, Number(item.total) / Math.max(1, Number(totals.totalIncome) + Number(totals.totalExpense)) * 100));
+            return `
+              <div class="chart-row">
+                <div>${item.category}</div>
+                <div class="bar-track"><div class="bar-fill" style="width:${width}%"></div></div>
+                <div class="value muted">${money.format(Number(item.total))}</div>
+              </div>
+            `;
+          }).join('')
+        : '<div class="muted">No category totals for this filter range.</div>';
+      els.summaryMeta.textContent = 'Updated just now';
+    }
+
+    function renderUsers(data) {
+      els.usersTable.innerHTML = data.map((user) => `
+        <tr>
+          <td>${user.name}</td>
+          <td>${user.email}</td>
+          <td><span class="role-chip">${user.role}</span></td>
+          <td><span class="status ${user.isActive ? 'active' : 'inactive'}">${user.isActive ? 'active' : 'inactive'}</span></td>
+        </tr>
+      `).join('');
+    }
+
+    async function apiFetch(path, options = {}) {
+      const response = await fetch(path, {
+        ...options,
+        headers: {
+          ...apiHeaders(),
+          ...(options.headers || {})
+        }
+      });
+
+      if (!response.ok) {
+        const payload = await response.json().catch(() => ({}));
+        throw new Error(payload?.error?.message || `Request failed with status ${response.status}`);
+      }
+
+      return response.status === 204 ? null : response.json();
+    }
+
+    async function loadRecords() {
+      const query = buildQuery();
+      setStatus('Loading records and summary...');
+      const payload = await apiFetch(`/api/records?${query}`);
+      state.lastRecords = payload.data || [];
+      renderRecords(state.lastRecords);
+      els.recordCount.textContent = String(payload.meta?.total ?? state.lastRecords.length);
+      return payload;
+    }
+
+    async function loadSummary() {
+      const query = new URLSearchParams();
+      for (const [key, value] of Object.entries(state.filters)) {
+        if (value && key !== 'page' && key !== 'pageSize') query.set(key, value);
+      }
+      const payload = await apiFetch(`/api/summary?${query.toString()}`);
+      state.lastSummary = payload.data;
+      renderSummary(payload.data);
+      return payload;
+    }
+
+    async function loadUsers() {
+      const user = currentUser();
+      if (user.role !== 'admin') {
+        els.usersTable.innerHTML = '<tr><td colspan="4" class="muted">Only admin users can view the user list.</td></tr>';
+        return;
+      }
+      const payload = await apiFetch('/api/users');
+      renderUsers(payload.data || []);
+    }
+
+    async function refreshAll() {
+      updateRoleUi();
+      try {
+        await Promise.all([loadRecords(), loadSummary(), loadUsers()]);
+        setStatus('Dashboard loaded successfully.', 'success');
+      } catch (error) {
+        setStatus(error.message, 'error');
+      }
+    }
+
+    async function createRecord() {
+      const user = currentUser();
+      if (user.role !== 'admin') {
+        setStatus('Only admin users can create records.', 'error');
+        return;
+      }
+
+      const payload = {
+        amount: Number(els.amount.value),
+        type: els.type.value,
+        category: els.category.value.trim(),
+        date: els.date.value,
+        notes: els.notes.value.trim() || null
+      };
+
+      try {
+        await apiFetch('/api/records', {
+          method: 'POST',
+          body: JSON.stringify(payload)
+        });
+        setStatus('Record created successfully.', 'success');
+        resetForm();
+        await refreshAll();
+      } catch (error) {
+        setStatus(error.message, 'error');
+      }
+    }
+
+    function resetForm() {
+      els.amount.value = '';
+      els.type.value = 'income';
+      els.category.value = '';
+      els.date.value = '';
+      els.notes.value = '';
+    }
+
+    function seedDemoData() {
+      const today = new Date();
+      const toDate = (offset) => {
+        const date = new Date(today);
+        date.setDate(today.getDate() + offset);
+        return date.toISOString().slice(0, 10);
+      };
+      const demo = [
+        { amount: 125000, type: 'income', category: 'salary', date: toDate(-18), notes: 'Monthly payroll' },
+        { amount: 2200, type: 'expense', category: 'office', date: toDate(-12), notes: 'Supplies' },
+        { amount: 8800, type: 'expense', category: 'travel', date: toDate(-8), notes: 'Client visit' },
+        { amount: 42000, type: 'income', category: 'consulting', date: toDate(-4), notes: 'Project milestone' },
+        { amount: 1700, type: 'expense', category: 'software', date: toDate(-2), notes: 'Tools renewal' }
+      ];
+
+      demo.forEach(async (entry) => {
+        try {
+          await apiFetch('/api/records', {
+            method: 'POST',
+            body: JSON.stringify(entry)
+          });
+        } catch (error) {
+          setStatus(error.message, 'error');
+        }
+      });
+
+      setStatus('Demo data request sent. Refresh after a moment.', 'success');
+    }
+
+    function applyFiltersFromUi() {
+      state.filters.type = els.filterType.value;
+      state.filters.category = els.filterCategory.value.trim();
+      state.filters.startDate = els.filterStart.value;
+      state.filters.endDate = els.filterEnd.value;
+    }
+
+    function clearFilters() {
+      els.filterType.value = '';
+      els.filterCategory.value = '';
+      els.filterStart.value = '';
+      els.filterEnd.value = '';
+      applyFiltersFromUi();
+    }
+
+    els.userSelect.innerHTML = users.map((user) => `<option value="${user.id}">${user.label} (${user.role})</option>`).join('');
+    els.userSelect.value = String(state.userId);
+
+    els.userSelect.addEventListener('change', async () => {
+      state.userId = Number(els.userSelect.value);
+      await refreshAll();
+    });
+    els.refreshBtn.addEventListener('click', refreshAll);
+    els.loadRecordsBtn.addEventListener('click', loadRecords);
+    els.loadSummaryBtn.addEventListener('click', loadSummary);
+    els.applyFiltersBtn.addEventListener('click', async () => {
+      applyFiltersFromUi();
+      await refreshAll();
+    });
+    els.clearFiltersBtn.addEventListener('click', async () => {
+      clearFilters();
+      await refreshAll();
+    });
+    els.createRecordBtn.addEventListener('click', createRecord);
+    els.resetFormBtn.addEventListener('click', resetForm);
+    els.seedBtn.addEventListener('click', seedDemoData);
+
+    updateRoleUi();
+    refreshAll();
+  </script>
 </body>
 </html>

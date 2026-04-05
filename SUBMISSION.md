@@ -26,7 +26,12 @@ Node.js (Express)
 - Data persistence: SQLite via better-sqlite3
 - Validation: Zod
 - Access control: Role-based middleware (viewer, analyst, admin)
-- Auth approach: Mock header-based auth via x-user-id
+- Auth approach: JWT tokens with mock x-user-id fallback for local testing
+- Search support on financial records
+- Soft delete for financial records
+- Rate limiting on auth and API routes
+- API documentation available at /docs and /openapi.json
+- Integration tests included
 
 ## Required API Header for Protected Routes
 

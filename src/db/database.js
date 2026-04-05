@@ -7,7 +7,7 @@ import { ROLES } from "../constants/roles.js";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const dataDir = path.resolve(__dirname, "../../data");
-const dbPath = path.join(dataDir, "finance.db");
+const dbPath = process.env.FINANCE_DB_PATH || path.join(dataDir, "finance.db");
 
 if (!fs.existsSync(dataDir)) {
   fs.mkdirSync(dataDir, { recursive: true });
@@ -15,6 +15,15 @@ if (!fs.existsSync(dataDir)) {
 
 export const db = new Database(dbPath);
 db.pragma("foreign_keys = ON");
+
+function ensureColumn(tableName, columnName, definition) {
+  const columns = db.prepare(`PRAGMA table_info(${tableName})`).all();
+  const hasColumn = columns.some((column) => column.name === columnName);
+
+  if (!hasColumn) {
+    db.exec(`ALTER TABLE ${tableName} ADD COLUMN ${columnName} ${definition}`);
+  }
+}
 
 export function initDatabase() {
   db.exec(`
@@ -38,9 +47,12 @@ export function initDatabase() {
       created_by INTEGER NOT NULL,
       created_at TEXT NOT NULL DEFAULT (datetime('now')),
       updated_at TEXT NOT NULL DEFAULT (datetime('now')),
+      deleted_at TEXT,
       FOREIGN KEY (created_by) REFERENCES users(id)
     );
   `);
+
+  ensureColumn("financial_records", "deleted_at", "TEXT");
 
   const userCount = db.prepare("SELECT COUNT(*) AS count FROM users").get().count;
 

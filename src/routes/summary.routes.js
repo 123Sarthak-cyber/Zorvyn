@@ -12,10 +12,12 @@ router.get(
   requireRole(ROLES.ADMIN, ROLES.ANALYST, ROLES.VIEWER),
   validateQuery(recordFilterSchema),
   (req, res) => {
-    const { type, category, startDate, endDate } = req.validatedQuery;
+    const { type, category, search, startDate, endDate } = req.validatedQuery;
 
     const conditions = [];
     const params = [];
+
+    conditions.push("deleted_at IS NULL");
 
     if (type) {
       conditions.push("type = ?");
@@ -25,6 +27,11 @@ router.get(
     if (category) {
       conditions.push("category = ?");
       params.push(category);
+    }
+
+    if (search) {
+      conditions.push("(lower(category) LIKE lower(?) OR lower(COALESCE(notes, '')) LIKE lower(?))");
+      params.push(`%${search}%`, `%${search}%`);
     }
 
     if (startDate) {

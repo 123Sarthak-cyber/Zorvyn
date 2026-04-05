@@ -26,6 +26,7 @@ export const updateRecordSchema = z
 export const recordFilterSchema = z.object({
   type: z.enum(RECORD_TYPE_LIST).optional(),
   category: z.string().trim().min(1).optional(),
+  search: z.string().trim().min(1).max(100).optional(),
   startDate: z.string().regex(dateRegex).optional(),
   endDate: z.string().regex(dateRegex).optional(),
   page: z.coerce.number().int().positive().default(1),

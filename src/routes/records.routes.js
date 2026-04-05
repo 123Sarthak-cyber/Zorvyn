@@ -17,10 +17,12 @@ router.get(
   requireRole(ROLES.ADMIN, ROLES.ANALYST, ROLES.VIEWER),
   validateQuery(recordFilterSchema),
   (req, res) => {
-    const { type, category, startDate, endDate, page, pageSize } = req.validatedQuery;
+    const { type, category, search, startDate, endDate, page, pageSize } = req.validatedQuery;
 
     const conditions = [];
     const params = [];
+
+    conditions.push("deleted_at IS NULL");
 
     if (type) {
       conditions.push("type = ?");
@@ -30,6 +32,11 @@ router.get(
     if (category) {
       conditions.push("category = ?");
       params.push(category);
+    }
+
+    if (search) {
+      conditions.push("(lower(category) LIKE lower(?) OR lower(COALESCE(notes, '')) LIKE lower(?))");
+      params.push(`%${search}%`, `%${search}%`);
     }
 
     if (startDate) {
@@ -125,7 +132,7 @@ router.patch("/:id", requireRole(ROLES.ADMIN), validateBody(updateRecordSchema),
     return next(new HttpError(400, "Invalid record id"));
   }
 
-  const currentRecord = db.prepare("SELECT id FROM financial_records WHERE id = ?").get(id);
+  const currentRecord = db.prepare("SELECT id FROM financial_records WHERE id = ? AND deleted_at IS NULL").get(id);
 
   if (!currentRecord) {
     return next(new HttpError(404, "Record not found"));
@@ -193,7 +200,9 @@ router.delete("/:id", requireRole(ROLES.ADMIN), (req, res, next) => {
     return next(new HttpError(400, "Invalid record id"));
   }
 
-  const result = db.prepare("DELETE FROM financial_records WHERE id = ?").run(id);
+  const result = db
+    .prepare("UPDATE financial_records SET deleted_at = datetime('now'), updated_at = datetime('now') WHERE id = ? AND deleted_at IS NULL")
+    .run(id);
 
   if (result.changes === 0) {
     return next(new HttpError(404, "Record not found"));
